@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CarResource;
 use App\Models\Car;
+use App\Models\Manufacturer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class CarController extends Controller
 {
@@ -47,7 +50,25 @@ class CarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'model'=>'required|string|max:100',
+            'doors_number'=>'required',
+            'year'=>'required|max:4',
+            'manufacturer_id'=>'required'
+         ]);
+         if($validator->fails()){
+             return response()->json($validator->errors());
+         }
+ 
+         $car = Car::create([
+             'model'=>$request->model,
+             'doors_number'=>$request->doors_number,
+             'year'=>$request->year,
+             'manufacturer_id'=>$request->manufacturer_id,
+             'user_id'=>Auth::user()->id,
+         ]);
+ 
+         return response()->json(['Car is created successfully', new CarResource($car)]);
     }
 
     /**
@@ -78,7 +99,28 @@ class CarController extends Controller
      */
     public function update(Request $request, Car $car)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'model'=>'required|string|max:100',
+            'doors_number'=>'required',
+            'year'=>'required|max:4',
+            'manufacturer_id'=>'required',
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+
+
+        $car->model = $request->model;
+        $car->doors_number = $request->doors_number;
+        $car->year = $request->year;
+        $car->manufacturer_id = $request->manufacturer_id;
+
+        $car->save();
+
+        return response()->json(['Car is updated successfully', new CarResource($car)]);
+
+
     }
 
     /**
@@ -89,6 +131,8 @@ class CarController extends Controller
      */
     public function destroy(Car $car)
     {
-        //
+        $car->delete();
+
+        return response()->json('Car is deleted successfully.');
     }
 }

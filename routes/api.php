@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarTestController;
 use App\Http\Controllers\UserController;
@@ -27,13 +28,30 @@ Route::get('/users/{id}', [UserController::class,'show']);
 
 Route::get('/users/{id}/cars', [UserController::class,'showCars']);
 
-Route::get('/cars', [CarController::class, 'index']);
+//Route::get('/cars', [CarController::class, 'index']);
 
-Route::get('/cars/{id}', [CarController::class,'show']);
-
-//Route::resource('cars',CarController::class);
+//Route::get('/cars/{id}', [CarController::class,'show']);
 
 
 
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/login', [AuthController::class, 'login']);
+
+//grupne rute sa ogranicenjem: Ne moze se pristupiti rutama ako nije autorizovan korisnik
+Route::group(['middleware'=>['auth:sanctum']], function(){
+
+    Route::get('/profile', function(Request $request){
+        return auth()->user();
+    });
+
+    Route::resource('cars', CarController::class)->only(['update', 'store', 'destroy']);
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+});
+
+//za prikaz kola (moze svako da pristupi)
+Route::resource('cars', CarController::class)->only(['index']);
 
 
