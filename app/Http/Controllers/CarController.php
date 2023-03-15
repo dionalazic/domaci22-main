@@ -19,9 +19,14 @@ class CarController extends Controller
         return CarResource::collection($cars);
     }
 
-    public function show($carid)
+    public function show($car_id)
     {
-        return new CarResource(Car::find($carid));
+        $car = Car::find($car_id);
+        if(is_null($car)){
+            return response()->json('Data not found', 404);
+        }
+        
+        return new CarResource($car);
     }
 
     /**

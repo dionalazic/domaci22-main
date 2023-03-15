@@ -27,9 +27,11 @@ Route::get('/users/{id}', [UserController::class,'show']);
 
 Route::get('/users/{id}/cars', [UserController::class,'showCars']);
 
+Route::get('/cars', [CarController::class, 'index']);
+
 Route::get('/cars/{id}', [CarController::class,'show']);
 
-Route::resource('cars',CarController::class);
+//Route::resource('cars',CarController::class);
 
 
 

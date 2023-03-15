@@ -13,7 +13,8 @@ class CarTestController extends Controller
         return $cars;
     }
 
-    public function show(Car $car){
+    public function show($id){
+        $car = Car::find($id);
         return new CarResource($car);
     }
 }
